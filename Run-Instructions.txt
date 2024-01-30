@@ -1,0 +1,18 @@
+Instructions to run the code:
+
+Steps:
+
+1. Download the code and Unzip. 
+2. Open in a VS code or Any IDE.
+3. Go to the code directory in a Terminal.
+4. Run:
+	a) npm install
+	b) npx prisma migrate dev
+
+5. To run in development environment:
+	a) npm run dev
+or,
+
+   To run in production environment:
+	c) npm run build 
+	d) npm start
