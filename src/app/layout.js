@@ -4,6 +4,7 @@ import NavBar from "@/components/NavBar";
 import AuthProvider from "@/ContextProviders/AuthProvider";
 import SessionStorageProvider from "@/ContextProviders/SessionStorageProvider";
 import CommentsProvider from "@/ContextProviders/CommentsProvider";
+import ReduxProvider from "@/providers/ReduxProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,14 +18,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
-        <AuthProvider>
-          <SessionStorageProvider>
-            <CommentsProvider>
-              <NavBar />
-              <div className="px-20">{children}</div>
-            </CommentsProvider>
-          </SessionStorageProvider>
-        </AuthProvider>
+        <ReduxProvider>
+          <AuthProvider>
+            <SessionStorageProvider>
+              <CommentsProvider>
+                <NavBar />
+                <div className="px-20">{children}</div>
+              </CommentsProvider>
+            </SessionStorageProvider>
+          </AuthProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

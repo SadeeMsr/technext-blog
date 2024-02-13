@@ -1,55 +1,51 @@
 "use client";
 import { useEffect, useState } from "react";
-import { filterRecipes } from "@/lib/Filters";
 import BlogCard from "./BlogCard";
 import Loader from "./Loader";
+import { fetchBlogs } from "@/redux/actions/blogs.action";
+import { connect } from "react-redux";
 
-export default function Feed() {
+function Feed(props) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [searchTimeout, setSearchTimeout] = useState(null);
-  const [searchedResults, setSearchedResults] = useState([]);
-
-  const getBlogs = async () => {
-    setLoading(true)
-    const response = await fetch("/api/blog");
-    const data = await response.json();
-
-    setData(data);
-  };
+  props.fetchBlogs();
 
   useEffect(() => {
-    getBlogs();
-    setLoading(false)
+    setData(props.blogs);
   }, []);
 
-
-
-  const handleSearchChange = (e) => {
-    clearTimeout(searchTimeout);
-    setSearchText(e.target.value);
-
-    setSearchTimeout(
-      setTimeout(() => {
-        const searchResult = filterRecipes(e.target.value, data);
-        setSearchedResults(searchResult);
-      }, 500)
-    );
-  };
-
+  console.log("blogs 11", props);
 
   return (
     <div className="flex flex-col w-[70%] border-r border-slate-800">
       <div className="flex items-center border-b border-slate-800 h-[12em]">
-        <h1 className="uppercase text-5xl font-bold header_text">Discover our latest blogs</h1>
+        <h1 className="uppercase text-5xl font-bold header_text">
+          Discover our latest blogs
+        </h1>
       </div>
-     {loading && <div className="mt-10">
-        <Loader />
-      </div>}
-      {
-        data?.map((item)=> <BlogCard key={item.id} cardBody={item} withBody={true} />)
-      }
+      {loading && (
+        <div className="mt-10">
+          <Loader />
+        </div>
+      )}
+      {data?.map((item) => (
+        <BlogCard key={item.id} cardBody={item} withBody={true} />
+      ))}
     </div>
   );
 }
+
+
+const mapStateToProps = (state) => {
+  return {
+    blogs: state.allBlogs,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchBlogs: () => dispatch(fetchBlogs()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Feed);
