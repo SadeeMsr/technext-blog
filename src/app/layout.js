@@ -1,9 +1,9 @@
 import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import NavBar from "@/components/NavBar";
-import AuthProvider from "@/ContextProviders/AuthProvider";
 import SessionStorageProvider from "@/ContextProviders/SessionStorageProvider";
 import CommentsProvider from "@/ContextProviders/CommentsProvider";
+import ConfigureAmplifyClientSide from "@/utils/ConfigureAmplifyClientSide";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,14 +17,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
-        <AuthProvider>
+        {/* <AuthProvider> */}
           <SessionStorageProvider>
             <CommentsProvider>
+              {/* <ConfigureAmplifyClientSide /> */}
               <NavBar />
               <div className="px-20">{children}</div>
             </CommentsProvider>
           </SessionStorageProvider>
-        </AuthProvider>
+        {/* </AuthProvider> */}
       </body>
     </html>
   );

@@ -3,14 +3,14 @@ import React, { useState, useEffect, Suspense } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import { app } from "@/utils/firebase";
+// import { useSession } from "next-auth/react";
+// import {
+//   getStorage,
+//   ref,
+//   uploadBytesResumable,
+//   getDownloadURL,
+// } from "firebase/storage";
+// import { app } from "@/utils/firebase";
 import { LuImagePlus } from "react-icons/lu";
 import Loader from "./Loader";
 import Image from "next/image";
@@ -22,7 +22,7 @@ export default function Editor({
   setEditorOpened,
   setBlogDetails,
 }) {
-  const { status, data } = useSession();
+  const status = "authenticated"
   const router = useRouter();
 
   const [body, setBody] = useState(blogDetails?.body || "");
@@ -31,42 +31,42 @@ export default function Editor({
   const [coverImg, setCoverImg] = useState(blogDetails?.coverImg || "");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const storage = getStorage(app);
-    const upload = () => {
-      const name = new Date().getTime() + file.name;
-      const storageRef = ref(storage, name);
+  // useEffect(() => {
+  //   const storage = getStorage(app);
+  //   const upload = () => {
+  //     const name = new Date().getTime() + file.name;
+  //     const storageRef = ref(storage, name);
 
-      const uploadTask = uploadBytesResumable(storageRef, file);
+  //     const uploadTask = uploadBytesResumable(storageRef, file);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-          }
-        },
-        (error) => {},
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setCoverImg(downloadURL);
-          });
-        }
-      );
-    };
+  //     uploadTask.on(
+  //       "state_changed",
+  //       (snapshot) => {
+  //         const progress =
+  //           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  //         console.log("Upload is " + progress + "% done");
+  //         switch (snapshot.state) {
+  //           case "paused":
+  //             console.log("Upload is paused");
+  //             break;
+  //           case "running":
+  //             console.log("Upload is running");
+  //             break;
+  //         }
+  //       },
+  //       (error) => {},
+  //       () => {
+  //         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+  //           setCoverImg(downloadURL);
+  //         });
+  //       }
+  //     );
+  //   };
 
-    file && upload();
-  }, [file]);
+  //   file && upload();
+  // }, [file]);
 
-  console.log(body, title, file, coverImg);
+  // console.log(body, title, file, coverImg);
 
   useEffect(() => {
     if (status === "unauthenticated") {

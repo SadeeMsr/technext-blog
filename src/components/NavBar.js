@@ -1,12 +1,11 @@
 "use client";
-import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 
 export default function NavBar() {
 
-  const { data, status } = useSession();
+  const status = "authenticated"
  
   console.log(status)
   return (
@@ -32,14 +31,13 @@ export default function NavBar() {
          {status === "authenticated" && <Link href="/write-blog" className="hover:underline">
             Write blog
           </Link>}
-         {status === "authenticated" && <p className="font-bold">{data?.user?.name}</p>}
+         {/* {status === "authenticated" && <p className="font-bold">{data?.user?.name}</p>} */}
           {(status === "unauthenticated" ||  status === "loading")? (
             <Link href="/log-in" className="p-2 px-8 border rounded shadow border-slate-800 hover:bg-slate-800 hover:text-white">
               Log in
             </Link>
           ) : (
             <button
-              onClick={signOut}
               className="p-2 px-8 border rounded shadow border-slate-800
               hover:bg-slate-800 hover:text-white"> Log out
             </button>

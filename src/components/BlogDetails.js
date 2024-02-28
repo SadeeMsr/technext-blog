@@ -17,7 +17,7 @@ export default function BlogDetails({ postId }) {
   };
 
   useEffect(() => {
-    fetchBlog();
+    // fetchBlog();
   }, []);
 
   return (

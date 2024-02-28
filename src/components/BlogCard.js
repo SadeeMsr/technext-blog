@@ -12,7 +12,7 @@ export default function BlogCard({ withBody, cardBody, removeData }) {
       }`}
     >
       <div className="w-[40%]">
-        {cardBody?.coverImg && (
+        {/* {cardBody?.coverImage && (
           <div
             className={`overflow-hidden relative ${
               withBody ? "h-[15rem]" : "h-[8rem]"
@@ -21,7 +21,7 @@ export default function BlogCard({ withBody, cardBody, removeData }) {
             <Suspense fallback={<Loader />}>
               <Image
                 alt="Mountains"
-                src={cardBody?.coverImg}
+                src={cardBody?.coverImage}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 fill
                 className="object-cover w-full"
@@ -29,7 +29,7 @@ export default function BlogCard({ withBody, cardBody, removeData }) {
               />
             </Suspense>
           </div>
-        )}
+        )} */}
       </div>
       <div
         className={`w-[60%] flex flex-col ${
@@ -49,7 +49,7 @@ export default function BlogCard({ withBody, cardBody, removeData }) {
               <div
                 className="text-slate-500 mt-5 font-light hover:underline"
                 dangerouslySetInnerHTML={{
-                  __html: cardBody?.body.substring(0, 300),
+                  __html: cardBody?.content.substring(0, 300),
                 }}
               />
             )}
