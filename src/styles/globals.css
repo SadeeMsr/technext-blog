@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 *{
   margin: 0;
   padding:0;
@@ -22,4 +24,12 @@
 
 .quill > .ql-container > .ql-editor.ql-blank::before{
   color: #b3b3b1;
+}
+
+
+.PhoneInputInput{
+  outline: none;
+  border: none;
+  background: transparent;
+  padding-left: 10px;
 }

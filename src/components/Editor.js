@@ -1,72 +1,69 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
-import ReactQuill from "react-quill";
+import React, { useState, useEffect, Suspense, useRef } from "react";
+import dynamic from "next/dynamic";
+
 import "react-quill/dist/quill.bubble.css";
+import { uploadData } from "aws-amplify/storage";
 import { useRouter } from "next/navigation";
-// import { useSession } from "next-auth/react";
-// import {
-//   getStorage,
-//   ref,
-//   uploadBytesResumable,
-//   getDownloadURL,
-// } from "firebase/storage";
-// import { app } from "@/utils/firebase";
 import { LuImagePlus } from "react-icons/lu";
 import Loader from "./Loader";
 import Image from "next/image";
 
-export default function Editor({
-  type,
-  blogDetails,
-  postId,
-  setEditorOpened,
-  setBlogDetails,
-}) {
-  const status = "authenticated"
-  const router = useRouter();
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
-  const [body, setBody] = useState(blogDetails?.body || "");
+export default function Editor({ type, blogDetails, handleSubmit }) {
+  const status = "authenticated";
+  const router = useRouter();
+  const fileInput = useRef(null);
+
+  const [content, setContent] = useState(blogDetails?.content || "");
   const [title, setTitle] = useState(blogDetails?.title || "");
   const [file, setFile] = useState(null);
-  const [coverImg, setCoverImg] = useState(blogDetails?.coverImg || "");
+  const [coverImage, setCoverImage] = useState(blogDetails?.coverImage || "");
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   const storage = getStorage(app);
-  //   const upload = () => {
-  //     const name = new Date().getTime() + file.name;
-  //     const storageRef = ref(storage, name);
+  useEffect(() => {
+    handleImageUpdate();
+  }, [file]);
 
-  //     const uploadTask = uploadBytesResumable(storageRef, file);
+  
+  async function handleImageUpdate() {
+    if (!file) return null;
+    try {
+      console.log(file);
+      const timestamp = new Date().getTime();
+      const fileNameWithoutSpaces = file.name.replace(/\s/g, "");
 
-  //     uploadTask.on(
-  //       "state_changed",
-  //       (snapshot) => {
-  //         const progress =
-  //           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  //         console.log("Upload is " + progress + "% done");
-  //         switch (snapshot.state) {
-  //           case "paused":
-  //             console.log("Upload is paused");
-  //             break;
-  //           case "running":
-  //             console.log("Upload is running");
-  //             break;
-  //         }
-  //       },
-  //       (error) => {},
-  //       () => {
-  //         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-  //           setCoverImg(downloadURL);
-  //         });
-  //       }
-  //     );
-  //   };
+      const newFileName =
+        fileNameWithoutSpaces.replace(/\..+$/, "") +
+        "_" +
+        timestamp +
+        file.name.match(/\.[^.]+$/)[0];
 
-  //   file && upload();
-  // }, [file]);
+      const result = await uploadData({
+        key: newFileName,
+        data: file,
+        options: {
+          accessLevel: 'guest',
+          onProgress: ({ transferredBytes, totalBytes }) => {
+            if (totalBytes) {
+              console.log(
+                `Upload progress ${Math.round(
+                  (transferredBytes / totalBytes) * 100
+                )} %`
+              );
+            }
+          },
+        },
+      }).result;
+      console.log("Succeeded: ", result);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  // console.log(body, title, file, coverImg);
+
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -82,67 +79,6 @@ export default function Editor({
     );
   }
 
-  const handleSubmit = async () => {
-    if (type !== "Edit") {
-      setLoading(true);
-      const res = await fetch("/api/blog/new", {
-        method: "POST",
-        body: JSON.stringify({
-          title,
-          body,
-          coverImg,
-          email: data?.user.email,
-        }),
-      });
-      if (res.status === 200) {
-        setLoading(false);
-        alert("Congratulations you have successfully published the blog!!");
-        const data = await res.json();
-        router.push(`/blog-details/${data.id}`);
-      }
-    } else {
-      if (!postId) return alert("Missing blog id!");
-
-      try {
-        const response = await fetch(`/api/blog/${postId}`, {
-          method: "PATCH",
-          body: JSON.stringify({
-            title,
-            body,
-            coverImg,
-          }),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          setBlogDetails(result);
-          setEditorOpened(false);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  // const handleDelete = async () => {
-  //   const hasConfirmed = confirm(
-  //     "Are you sure you want to delete this prompt?"
-  //   );
-
-  //   if (hasConfirmed) {
-  //     try {
-  //       const response = await fetch(`/api/blog/${postId}`, {
-  //         method: "DELETE",
-  //       });
-  //       if (response.ok) {
-  //         console.log(response)
-  //         router.push("/");
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
 
   return (
     <>
@@ -162,7 +98,7 @@ export default function Editor({
           {status === "authenticated" && (
             <button
               disabled={loading}
-              onClick={handleSubmit}
+              onClick={() => handleSubmit({ title, content, coverImage })}
               className="bg-slate-950 px-10 py-4 text-white shadow hover:bg-slate-800 hover:shadow-md"
             >
               {loading ? "Submitting..." : type}
@@ -171,29 +107,31 @@ export default function Editor({
         </div>
       </div>
       <div className="bg-slate-50 min-h-screen my-5 mb-10 p-10">
-        {!coverImg && (
+        {
           <div>
             <input
               type="file"
               id="image"
+              ref={fileInput}
               onChange={(e) => setFile(e.target.files[0])}
               style={{ display: "none" }}
             />
             <label
               htmlFor="image"
               className="text-slate-400 text-xl flex gap-5 border border-slate-300 p-5 justify-center items-center w-full cursor-pointer"
+              // onClick={handleImageUpdate}
             >
               <LuImagePlus />
               Upload cover image
             </label>
           </div>
-        )}
+        }
 
-        {coverImg && (
+        {/* {coverImg && (
           <div className="flex h-[28rem] relative overflow-hidden rounded-md">
             <Image src={coverImg} alt="" fill className="object-cover" />
           </div>
-        )}
+        )} */}
 
         <input
           type="text"
@@ -206,8 +144,8 @@ export default function Editor({
         <div>
           <ReactQuill
             theme="bubble"
-            value={body}
-            onChange={setBody}
+            value={content}
+            onChange={setContent}
             placeholder="Tell your story..."
           />
         </div>

@@ -11,6 +11,7 @@ export const getPost = /* GraphQL */ `
       coverImage
       createdAt
       updatedAt
+      username
       __typename
     }
   }
@@ -30,6 +31,7 @@ export const listPosts = /* GraphQL */ `
         coverImage
         createdAt
         updatedAt
+        username
         __typename
       }
       nextToken
@@ -60,6 +62,7 @@ export const postsByUsername = /* GraphQL */ `
         coverImage
         createdAt
         updatedAt
+        username
         __typename
       }
       nextToken

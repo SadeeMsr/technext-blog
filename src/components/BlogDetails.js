@@ -6,19 +6,13 @@ import { MdArrowBack } from "react-icons/md";
 import Editor from "./Editor";
 import Blog from "./Blog";
 
-export default function BlogDetails({ postId }) {
+export default function BlogDetails({ blog }) {
   const [isEditorOpened, setEditorOpened] = useState(false);
-  const [blogDetails, setBlogDetails] = useState({});
 
-  const fetchBlog = async () => {
-    const response = await fetch(`/api/blog/${postId}`);
-    const data = await response.json();
-    setBlogDetails(data);
-  };
-
-  useEffect(() => {
-    // fetchBlog();
-  }, []);
+  
+  function handleEdit(params) {
+    console.log(params,"this edit content")
+  }
 
   return (
     <div className="w-[70%] min-h-screen border-r border-slate-800 pe-10 py-10">
@@ -46,13 +40,12 @@ export default function BlogDetails({ postId }) {
         {isEditorOpened ? (
           <Editor
             type="Edit"
-            blogDetails={blogDetails}
-            setBlogDetails={setBlogDetails}
-            postId={postId}
+            blogDetails={blog}
+            handleSubmit={handleEdit}
             setEditorOpened={setEditorOpened}
           />
         ) : (
-          <Blog blogDetails={blogDetails} />
+          <Blog blogDetails={blog} />
         )}
       </div>
     </div>
