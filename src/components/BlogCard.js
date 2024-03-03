@@ -12,7 +12,7 @@ export default function BlogCard({ withBody, cardBody, removeData }) {
       }`}
     >
       <div className="w-[40%]">
-        {/* {cardBody?.coverImage && (
+        {cardBody?.coverImage && (
           <div
             className={`overflow-hidden relative ${
               withBody ? "h-[15rem]" : "h-[8rem]"
@@ -29,7 +29,7 @@ export default function BlogCard({ withBody, cardBody, removeData }) {
               />
             </Suspense>
           </div>
-        )} */}
+        )}
       </div>
       <div
         className={`w-[60%] flex flex-col ${

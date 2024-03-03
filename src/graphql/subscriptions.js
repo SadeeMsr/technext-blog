@@ -4,9 +4,9 @@
 export const onCreatePost = /* GraphQL */ `
   subscription OnCreatePost(
     $filter: ModelSubscriptionPostFilterInput
-    $username: String
+    $userName: String
   ) {
-    onCreatePost(filter: $filter, username: $username) {
+    onCreatePost(filter: $filter, userName: $userName) {
       id
       title
       content
@@ -14,7 +14,6 @@ export const onCreatePost = /* GraphQL */ `
       coverImage
       createdAt
       updatedAt
-      username
       __typename
     }
   }
@@ -22,9 +21,9 @@ export const onCreatePost = /* GraphQL */ `
 export const onUpdatePost = /* GraphQL */ `
   subscription OnUpdatePost(
     $filter: ModelSubscriptionPostFilterInput
-    $username: String
+    $userName: String
   ) {
-    onUpdatePost(filter: $filter, username: $username) {
+    onUpdatePost(filter: $filter, userName: $userName) {
       id
       title
       content
@@ -32,7 +31,6 @@ export const onUpdatePost = /* GraphQL */ `
       coverImage
       createdAt
       updatedAt
-      username
       __typename
     }
   }
@@ -40,9 +38,9 @@ export const onUpdatePost = /* GraphQL */ `
 export const onDeletePost = /* GraphQL */ `
   subscription OnDeletePost(
     $filter: ModelSubscriptionPostFilterInput
-    $username: String
+    $userName: String
   ) {
-    onDeletePost(filter: $filter, username: $username) {
+    onDeletePost(filter: $filter, userName: $userName) {
       id
       title
       content
@@ -50,7 +48,6 @@ export const onDeletePost = /* GraphQL */ `
       coverImage
       createdAt
       updatedAt
-      username
       __typename
     }
   }

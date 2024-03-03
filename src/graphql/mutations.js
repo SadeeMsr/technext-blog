@@ -14,7 +14,6 @@ export const createPost = /* GraphQL */ `
       coverImage
       createdAt
       updatedAt
-      username
       __typename
     }
   }
@@ -32,7 +31,6 @@ export const updatePost = /* GraphQL */ `
       coverImage
       createdAt
       updatedAt
-      username
       __typename
     }
   }
@@ -50,7 +48,6 @@ export const deletePost = /* GraphQL */ `
       coverImage
       createdAt
       updatedAt
-      username
       __typename
     }
   }

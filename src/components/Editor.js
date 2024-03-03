@@ -3,7 +3,8 @@ import React, { useState, useEffect, Suspense, useRef } from "react";
 import dynamic from "next/dynamic";
 
 import "react-quill/dist/quill.bubble.css";
-import { uploadData } from "aws-amplify/storage";
+import { getCurrentUser } from 'aws-amplify/auth';
+import { uploadData, getUrl } from "aws-amplify/storage";
 import { useRouter } from "next/navigation";
 import { LuImagePlus } from "react-icons/lu";
 import Loader from "./Loader";
@@ -18,6 +19,7 @@ export default function Editor({ type, blogDetails, handleSubmit }) {
 
   const [content, setContent] = useState(blogDetails?.content || "");
   const [title, setTitle] = useState(blogDetails?.title || "");
+  const [userName, setUserName] = useState(blogDetails?.userName || "");
   const [file, setFile] = useState(null);
   const [coverImage, setCoverImage] = useState(blogDetails?.coverImage || "");
   const [loading, setLoading] = useState(false);
@@ -56,28 +58,49 @@ export default function Editor({ type, blogDetails, handleSubmit }) {
           },
         },
       }).result;
-      console.log("Succeeded: ", result);
-      console.log(result);
+
+      if(result.key){
+
+        const uploadedFileUrl = await getUrl({
+          key: newFileName,
+          options: {
+            validateObjectExistence: true // defaults to false
+          }
+        });
+        setCoverImage(uploadedFileUrl.url.href)
+        const user = await currentAuthenticatedUser()
+        setUserName(user);
+      }
+
     } catch (error) {
       console.log(error);
     }
   }
+ 
 
-
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
+  async function currentAuthenticatedUser() {
+    try {
+      const { userId, username } = await getCurrentUser();
+      return `${userId}::${username}`
+    } catch (err) {
+      console.log(err);
     }
-  }, [status, router]);
-
-  if (status === "loading") {
-    return (
-      <div className="mt-20">
-        <Loader />
-      </div>
-    );
   }
+
+
+  // useEffect(() => {
+  //   if (!userName) {
+  //     router.push("/");
+  //   }
+  // }, [status, router]);
+
+  // if (status === "loading") {
+  //   return (
+  //     <div className="mt-20">
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
 
 
   return (
@@ -98,7 +121,7 @@ export default function Editor({ type, blogDetails, handleSubmit }) {
           {status === "authenticated" && (
             <button
               disabled={loading}
-              onClick={() => handleSubmit({ title, content, coverImage })}
+              onClick={() => handleSubmit({ title, content, coverImage, userName })}
               className="bg-slate-950 px-10 py-4 text-white shadow hover:bg-slate-800 hover:shadow-md"
             >
               {loading ? "Submitting..." : type}
@@ -127,11 +150,18 @@ export default function Editor({ type, blogDetails, handleSubmit }) {
           </div>
         }
 
-        {/* {coverImg && (
-          <div className="flex h-[28rem] relative overflow-hidden rounded-md">
-            <Image src={coverImg} alt="" fill className="object-cover" />
+        {coverImage && (
+          <div className="flex h-[28rem] relative overflow-hidden rounded-md mt-10">
+            <Image
+                alt="Mountains"
+                src={coverImage}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                fill
+                className="object-cover w-full"
+                priority
+              />
           </div>
-        )} */}
+        )}
 
         <input
           type="text"
